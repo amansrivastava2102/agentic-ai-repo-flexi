@@ -1,135 +1,323 @@
-# Agentic AI Task Executor
+# 🤖 Agentic AI Task Executor
 
-A beginner-friendly Python agent that reads a user instruction, **chooses a task with a rule-based router**, runs it, and prints the result. Written in plain Python (no LangChain / CrewAI / Groq).
+A beginner-friendly Python project that reads a user's instruction, selects the appropriate task using a **rule-based router**, executes it, and displays the result.
 
-| Task | Handled by |
-|---|---|
-| Text summarization | Gemini |
-| Translation to Hindi | Gemini |
-| Sentiment (Positive / Negative / Neutral) | Gemini |
-| Current weather | Open-Meteo API (no key needed) |
-| General questions | Gemini |
+Built with **Python, Google Gemini, and Open-Meteo** — without LangChain, CrewAI, or other agent frameworks.
 
-## Folder structure
+## ✨ Features
+
+| Feature | Description | Technology |
+|---|---|---|
+| 📝 Text Summarization | Summarizes text into 1–3 sentences | Gemini |
+| 🌐 Hindi Translation | Translates text into Hindi | Gemini |
+| 💬 Sentiment Analysis | Classifies text as Positive, Negative, or Neutral | Gemini |
+| 🌤️ Weather Information | Retrieves current weather for a city | Open-Meteo API |
+| 🧠 General Q&A | Answers general knowledge questions | Gemini |
+
+### Why this project?
+
+- **Simple architecture:** Easy to understand and extend.
+- **Rule-based routing:** Uses regular expressions to identify the requested task.
+- **Secure API key handling:** Loads credentials from environment variables.
+- **Error handling:** Handles missing input, invalid cities, API errors, and unavailable services.
+- **No agent frameworks:** Uses plain Python and lightweight libraries.
+- **Free weather API:** Uses Open-Meteo without requiring an API key.
+
+## 🏗️ Project Structure
 
 ```text
 agentic-task-executor/
-├── .env                 your real API key (never commit)
-├── .env.example         template showing which variables exist
-├── .gitignore           keeps .env and .venv out of Git
-├── requirements.txt     google-genai, python-dotenv, requests
-├── README.md
-├── main.py              entry point
+│
+├── .env                 # API key (never commit)
+├── .env.example         # Environment variable template
+├── .gitignore           # Excludes secrets and virtual environments
+├── requirements.txt     # Project dependencies
+├── README.md            # Project documentation
+├── main.py              # Application entry point
+│
 └── agent/
-    ├── __init__.py      marks the folder as a package
-    ├── llm.py           the only file that talks to Gemini
-    ├── decision.py      rule-based router: message -> task
-    ├── tasks.py         the five tasks, with validation and error handling
-    ├── tools.py         get_weather(city) using Open-Meteo
-    └── executor.py      the interactive loop
+    ├── __init__.py      # Python package initializer
+    ├── llm.py           # Gemini API integration
+    ├── decision.py      # Rule-based task router
+    ├── tasks.py         # Task execution and validation
+    ├── tools.py         # Open-Meteo weather integration
+    └── executor.py      # Interactive execution loop
 ```
 
-Import direction (no circular imports): `main -> executor -> decision, tasks`; `tasks -> decision, llm, tools`.
-
-## Architecture and workflow
+## 🔄 Architecture & Workflow
 
 ```text
-User Input -> Task Decision -> Task Execution -> Gemini LLM or Weather Tool -> Result Processing -> Response
-              (decision.py)    (tasks.py)        (llm.py / tools.py)          (tasks.py)            (executor.py)
+            ┌─────────────────┐
+            │   User Input    │
+            └────────┬────────┘
+                     ▼
+            ┌─────────────────┐
+            │  Task Decision  │
+            │  decision.py    │
+            └────────┬────────┘
+                     ▼
+            ┌─────────────────┐
+            │  Task Execution │
+            │    tasks.py     │
+            └────────┬────────┘
+                     ▼
+            ┌─────────────────┐
+            │ Gemini or Tool  │
+            │ llm.py/tools.py │
+            └────────┬────────┘
+                     ▼
+            ┌─────────────────┐
+            │ Result Processing│
+            │    tasks.py     │
+            └────────┬────────┘
+                     ▼
+            ┌─────────────────┐
+            │    Response     │
+            │  executor.py    │
+            └─────────────────┘
 ```
 
-**Honest description:** task selection is a *rule-based router* (regular expressions in `decision.py`). Gemini is used only to perform language tasks *after* the router has decided. The LLM does **not** choose tools, so this is not autonomous LLM tool calling.
+### 🧩 How It Works
 
-## Setup (Windows PowerShell, from the project folder)
+1. The user enters a natural-language instruction.
+2. The rule-based router in `decision.py` analyzes the input using regular expressions.
+3. The router selects the appropriate task.
+4. The task is executed through Gemini or the Open-Meteo API.
+5. The application validates and processes the result.
+6. The response is displayed in the terminal.
+
+> **Important:** This project uses a rule-based router, not autonomous LLM tool calling. Gemini performs language tasks only after the router selects the task.
+
+## 🛠️ Technologies Used
+
+- **Python 3.11 or 3.12** — Core programming language
+- **Google Gemini API** — Summarization, translation, sentiment analysis, and general Q&A
+- **Open-Meteo API** — Weather information and geocoding
+- **google-genai** — Official Google Gen AI Python SDK
+- **python-dotenv** — Environment variable management
+- **requests** — HTTP requests
+- **Cursor IDE** — Development environment
+- **Git & GitHub** — Version control and source code hosting
+
+## ⚙️ Installation & Setup
+
+### Prerequisites
+
+- Python 3.11 or 3.12
+- Git
+- A Google Gemini API key
+- An internet connection
+
+### Step 1: Clone the repository
+
+```bash
+git clone https://github.com/amansrivastava2102/agentic-ai-repo-flexi.git
+cd agentic-ai-repo-flexi
+```
+
+If you already have the project on your computer, open a terminal in the project folder instead.
+
+### Step 2: Create a virtual environment
 
 ```powershell
-# 1. Create a virtual environment (Python 3.11 or 3.12)
 python -m venv .venv
+```
 
-# 2. Activate it (if blocked, run once: Set-ExecutionPolicy -Scope CurrentUser RemoteSigned)
+### Step 3: Activate the virtual environment
+
+```powershell
 .\.venv\Scripts\Activate.ps1
+```
 
-# 3. Install dependencies
+If PowerShell blocks activation, run:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+Then activate the environment again.
+
+### Step 4: Install dependencies
+
+```powershell
 pip install -r requirements.txt
+```
 
-# 4. Configure the key: get one at https://aistudio.google.com/apikey
-notepad .env        # make the line read: GOOGLE_API_KEY=your_real_key   (no quotes, no spaces)
+### Step 5: Configure the API key
 
-# 5. Run
+Get a Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey).
+
+Create or edit the `.env` file in the project root:
+
+```env
+GOOGLE_API_KEY=your_real_api_key
+```
+
+Do not add quotes or spaces around the equals sign.
+
+Optional: configure the Gemini model:
+
+```env
+GEMINI_MODEL=gemini-3.1-flash-lite
+```
+
+The application can use `gemini-flash-latest` as a fallback for HTTP 404 model errors, provided the fallback is available to your API key.
+
+### Step 6: Run the application
+
+```powershell
 python main.py
-# or, equivalently, from the project root:
-python -m agent.executor
+```
 
-# 6. Leave the virtual environment when finished
+Alternatively:
+
+```powershell
+python -m agent.executor
+```
+
+### Step 7: Deactivate the virtual environment
+
+```powershell
 deactivate
 ```
 
-### Changing the Gemini model
-Google retires models regularly. The default is `gemini-3.1-flash-lite` with `gemini-flash-latest` as an automatic fallback on HTTP 404. To use another model, add this line to `.env` (no code change needed):
+## 💻 Usage Examples
 
-```text
-GEMINI_MODEL=model-name-from-https://ai.google.dev/gemini-api/docs/models
+Start the application and enter instructions such as the following:
+
+| User Input | Expected Task |
+|---|---|
+| `Summarize this: Artificial intelligence automates repetitive tasks.` | Text summarization |
+| `Translate hello, how are you? to Hindi` | Hindi translation |
+| `Analyze sentiment: I love this product!` | Positive sentiment |
+| `Analyze sentiment: This is the worst service ever.` | Negative sentiment |
+| `Analyze sentiment: The package arrived on Tuesday.` | Neutral sentiment |
+| `What is the temperature in Pune today?` | Current weather |
+| `What is an AI agent?` | General question |
+| `What is the weather today?` | Ask the user for a city |
+| `Summarize this:` | Ask for text to summarize |
+| `What is the temperature of boiling water?` | General question |
+
+## 🧪 Testing & Validation
+
+Use the following test cases to verify the application's behavior.
+
+| # | Test Case | Expected Result |
+|---|---|---|
+| 1 | Summarization request | Short summary preserving the meaning |
+| 2 | Hindi translation request | Hindi text in Devanagari script |
+| 3 | Positive sentiment | Positive label |
+| 4 | Negative sentiment | Negative label |
+| 5 | Neutral sentiment | Neutral label |
+| 6 | Weather in Pune | Temperature, humidity, and wind information |
+| 7 | General knowledge question | Relevant answer from Gemini |
+| 8 | Weather request without a city | Friendly prompt asking for a city |
+| 9 | Invalid city name | Helpful error message without a traceback |
+| 10 | Empty summarization input | Request for text to summarize |
+| 11 | Boiling water temperature | Routed to general Q&A, not weather |
+| 12 | Invalid Gemini API key | Friendly API error; application remains usable |
+
+**Testing notes:**
+- Verify that the router prints the selected task before execution.
+- Compare translation and weather results with reliable reference sources.
+- Record actual results from your own runs.
+- Never claim a test passed unless you have verified it.
+
+## 🔀 Rule-Based Router vs. LLM-Driven Agent
+
+| Feature | This Project | LLM-Driven Tool-Calling Agent |
+|---|---|---|
+| Task selection | Regular expressions and rules | LLM selects tools based on descriptions |
+| Flexibility | Depends on predefined patterns | Can interpret more varied instructions |
+| Predictability | Generally deterministic routing | Tool selection may vary |
+| Cost | No separate LLM call for routing | Usually requires an LLM call for tool selection |
+| Multi-step planning | Not implemented | Can support multi-step tool execution |
+| Failure modes | Missing or incorrect rules | Incorrect tool selection or arguments |
+
+## 🔐 Security
+
+- Store your API key in `.env`.
+- Add `.env` and `.venv/` to `.gitignore`.
+- Never commit real API keys, passwords, or other credentials.
+- Keep `.env.example` limited to placeholder values.
+- If a secret is accidentally pushed to GitHub, revoke or rotate it immediately.
+
+Example `.gitignore`:
+
+```gitignore
+.env
+.venv/
+__pycache__/
+*.py[cod]
 ```
 
-## Testing and collecting evidence
+## ⚠️ Limitations
 
-Run `python main.py`, type each input, and copy the console output (screenshot or text) into your report. Fill the last column yourself with what you actually observed.
+- Task selection depends on predefined keywords and regular expressions.
+- Only Hindi translation is supported.
+- The application does not retain conversation memory between turns.
+- City geocoding may select an unintended location when names are ambiguous.
+- Gemini responses may vary between runs.
+- Language tasks require an internet connection and a valid API key.
+- API quotas, rate limits, and model availability may affect execution.
+- The application does not autonomously plan and execute multiple tools.
 
-| # | Input | Expected behaviour | How to verify | Actual result |
-|---|---|---|---|---|
-| 1 | `Summarize this: Artificial intelligence helps automate repetitive tasks.` | `[Task selected: summarize]`, then a 1-3 sentence summary | Summary is shorter and keeps the meaning | |
-| 2 | `Translate hello, how are you? to Hindi` | `translate`; Devanagari text (e.g. नमस्ते, आप कैसे हैं?) | Compare with Google Translate | |
-| 3 | `Analyze sentiment: I love this product!` | `sentiment`; `Sentiment: Positive` | Label matches the text | |
-| 4 | `Analyze sentiment: This is the worst service I have ever had.` | `Sentiment: Negative` | Label matches the text | |
-| 5 | `Analyze sentiment: The package arrived on Tuesday.` | `Sentiment: Neutral` | Label matches the text | |
-| 6 | `What is the temperature in Pune today?` | `weather`; location "Pune, Maharashtra, India", temperature in °C, humidity %, wind km/h | Compare with a weather website (small differences are normal) | |
-| 7 | `What is an AI agent?` | `general`; a clear explanation from Gemini | Answer is accurate and readable | |
-| 8 | `What is the weather today?` | `weather`; asks for a city instead of crashing | Message says it could not tell which city | |
-| 9 | `weather in Xyzzyq` | Friendly "could not find a city" message | No traceback | |
-| 10 | `Summarize this:` | Asks for text to summarize | No API call is made | |
-| 11 | `What is the temperature of boiling water?` | `general` (not weather) | Shows the router avoids broad keywords | |
-| 12 | Temporarily set a wrong key in `.env`, ask `What is an AI agent?` | Friendly "API key rejected" message; app keeps running | Restore the key afterwards | |
+## 🚀 Future Improvements
 
-Router-only check (no API key or internet needed): the `[Task selected: ...]` line is printed before execution, so tests 1-11 verify routing even when Gemini is unavailable.
+- Implement LLM-based routing with function calling.
+- Add support for more languages.
+- Introduce conversation memory.
+- Build a web interface using Streamlit or FastAPI.
+- Add automated unit and integration tests.
+- Support multiple weather providers and more data sources.
+- Add structured logging and improved error reporting.
+- Enable safe multi-step task execution.
 
-## Report outline
+## 📚 Learning Outcomes
 
-1. **Title and abstract**: one-paragraph summary of what was built and tested.
-2. **Problem statement**: repetitive text and information tasks need separate tools; a single interface that picks the right one saves effort.
-3. **Objectives**: five tasks; secure key handling; graceful errors; no agent frameworks.
-4. **Existing vs proposed system**: separate websites/apps per task vs one command-line agent.
-5. **System architecture**: the file structure and import diagram above.
-6. **Agent workflow**: the pipeline diagram above.
-7. **Tools and technologies**: Python, google-genai, python-dotenv, requests, Open-Meteo, Cursor IDE.
-8. **Implementation**: one subsection per file (router patterns, Gemini wrapper, weather tool, loop).
-9. **Test cases and actual results**: the table above, filled with your real observations and screenshots.
-10. **Limitations**: keyword/regex routing misses unusual phrasing; Hindi is the only target language; no memory between turns; single-city geocoding picks the top match; Gemini output can vary between runs; needs internet and a key.
-11. **Future improvements**: LLM-based routing via function calling, more languages, conversation memory, automated unit tests, a web UI.
-12. **Conclusion**.
-13. **Individual contribution and reflection**: what you wrote, debugged and learned (be specific; mention bugs you found).
+This project demonstrates:
 
-### Rule-based router vs LLM-driven tool-calling agent
+- Python modular programming and package structure
+- Regular expressions and rule-based decision-making
+- Integration with external APIs
+- Environment variables and secure credential handling
+- Input validation and exception handling
+- Command-line application development
+- Git and GitHub workflows
+- The difference between rule-based automation and LLM-driven agents
 
-| | This project (rule-based router) | LLM-driven tool-calling agent |
-|---|---|---|
-| Who picks the task? | Your regular expressions | The LLM, given tool descriptions |
-| Flexibility | Only phrasings you anticipated | Understands new phrasing |
-| Predictability / cost | Deterministic, free, fast | Can vary; costs an extra model call |
-| Multi-step plans | No | Yes (can call several tools in sequence) |
-| Failure mode | Wrong or missing rule | Wrong tool or invented arguments |
+## 📝 Report Outline
 
-## Troubleshooting
+For academic documentation or project submission, use the following sections:
 
-| Problem | Fix |
-|---|---|
-| `GOOGLE_API_KEY is missing` | Edit `.env` (not `.env.example`), set a real key, restart. Run from the project folder so `.env` is found. |
-| `404 NOT_FOUND` / "model not found" | The model was retired or renamed. Pick a current name from the Gemini models page and set `GEMINI_MODEL` in `.env`. |
-| `429` quota error | Free-tier limit reached; wait and retry. |
-| `ModuleNotFoundError: google` / `dotenv` / `requests` | Activate the venv (`.\.venv\Scripts\Activate.ps1`) then `pip install -r requirements.txt`. |
-| `ModuleNotFoundError: agent` | You are in the wrong folder. `cd` into `agentic-task-executor` and run `python main.py`. |
-| Activation blocked by PowerShell | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, then activate again. |
-| Hindi shows as `????` | Use Windows Terminal or Cursor's terminal; `main.py` already sets UTF-8 output. |
-| Weather says it cannot connect | Check internet or firewall; Open-Meteo needs no key. |
-| Installed the old `google-generativeai` | Not used here. Run `pip uninstall google-generativeai` and install `google-genai` only. |
-#   a g e n t i c - a i - r e p o - f l e x i  
- 
+1. Title and abstract
+2. Problem statement
+3. Objectives
+4. Existing system vs. proposed system
+5. System architecture
+6. Agent workflow
+7. Tools and technologies
+8. Implementation details
+9. Test cases and actual results
+10. Limitations
+11. Future enhancements
+12. Conclusion
+13. Individual contribution and reflection
+
+## 🎯 Conclusion
+
+The **Agentic AI Task Executor** demonstrates how a simple Python application can route natural-language instructions to appropriate language-processing tasks and external tools.
+
+By combining rule-based decision-making, Google Gemini, and the Open-Meteo API, the project provides a practical introduction to API integration, modular software design, and AI-assisted automation without relying on large agent frameworks.
+
+It also provides a foundation for future development toward more flexible, LLM-driven agents with function calling, memory, and multi-step planning.
+
+## 👨‍💻 Author
+
+**Aman Srivastava**
+
+GitHub: [@amansrivastava2102](https://github.com/amansrivastava2102)
+
+---
+
+⭐ If you find this project useful, consider giving the repository a star!
